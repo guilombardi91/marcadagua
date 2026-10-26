@@ -1,0 +1,5 @@
+pypdf>=4.0
+reportlab>=4.0
+pillow>=10.0
+# opcional, só para arquivos Word (.docx/.doc) -- requer MS Word instalado
+# pywin32

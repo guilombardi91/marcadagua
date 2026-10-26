@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Marca d'Água ArttiCapital</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: ferramenta de duas colunas — área de trabalho (envio + fila) à esquerda, prova da página à direita */
+  :root {
+    --bg: #EEF1F0; --surface: #FFFFFF; --fg: #14201D; --muted: #5B6B66; --line: #D5DCD9;
+    --accent: #0E6B57; --accent-ink: #FFFFFF; --accent-soft: #DCEDE7;
+    --ok: #1E7A46; --ok-soft: #DFF1E6; --err: #B3261E; --err-soft: #F8E1DF; --warn-soft: #ECEFEE;
+    --paper: #FFFFFF; --paper-line: #E3E7E5; --stamp: #8E9995;
+    --font-ui: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
+    --radius: 10px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1513; --surface: #18201E; --fg: #E4EBE8; --muted: #93A39E; --line: #2A3532;
+      --accent: #3FB896; --accent-ink: #06130F; --accent-soft: #163029;
+      --ok: #5CC98A; --ok-soft: #15291D; --err: #F2847C; --err-soft: #3A1B19; --warn-soft: #222B29;
+      --paper: #E9EDEB; --paper-line: #CBD2CF; --stamp: #7F8B87;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1513; --surface: #18201E; --fg: #E4EBE8; --muted: #93A39E; --line: #2A3532;
+    --accent: #3FB896; --accent-ink: #06130F; --accent-soft: #163029;
+    --ok: #5CC98A; --ok-soft: #15291D; --err: #F2847C; --err-soft: #3A1B19; --warn-soft: #222B29;
+    --paper: #E9EDEB; --paper-line: #CBD2CF; --stamp: #7F8B87;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--fg);
+    font: 15px/1.5 var(--font-ui);
+    padding-block: 28px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 24px; }
+
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
+  .brand { display: grid; gap: 4px; }
+  .eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(24px, 3.4vw, 32px); line-height: 1.15; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .privacy { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); max-width: 42ch; }
+  .privacy svg { flex: none; color: var(--accent); }
+
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } .proof { order: -1; } }
+
+  .work { display: grid; gap: 16px; min-width: 0; }
+
+  .drop {
+    position: relative; display: grid; place-items: center; text-align: center; gap: 10px;
+    padding: 36px 20px; border: 1.5px dashed var(--line); border-radius: var(--radius);
+    background: var(--surface); cursor: pointer; transition: border-color .15s, background .15s;
+  }
+  .drop:hover, .drop:focus-visible, .drop.over { border-color: var(--accent); background: var(--accent-soft); outline: none; }
+  .drop strong { font-size: 17px; font-weight: 600; }
+  .drop .hint { color: var(--muted); font-size: 13px; }
+  .drop .formats { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .chip { font: 500 11px/1 var(--font-mono); letter-spacing: .04em; padding: 5px 7px; border-radius: 4px; background: var(--warn-soft); color: var(--muted); }
+  .drop input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+  .queue { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .queue-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  .queue-head h2 { margin: 0; font-size: 14px; font-weight: 600; }
+  .queue-head .count { font: 400 12px var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  button { font: 600 13px/1 var(--font-ui); border-radius: 7px; padding: 9px 13px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
+  button:hover { border-color: var(--muted); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  button.primary:hover { filter: brightness(1.08); }
+  button:disabled { opacity: .45; cursor: default; filter: none; }
+
+  ul.files { list-style: none; margin: 0; padding: 0; }
+  .file { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  .file:last-child { border-bottom: 0; }
+  .ext { display: grid; place-items: center; width: 36px; height: 44px; border-radius: 4px; border: 1px solid var(--line); font: 500 10px var(--font-mono); color: var(--muted); text-transform: uppercase; }
+  .meta { min-width: 0; display: grid; gap: 2px; }
+  .name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .detail { font: 400 12px var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .detail.error { color: var(--err); font-family: var(--font-ui); font-size: 13px; }
+  .right { display: flex; align-items: center; gap: 8px; }
+  .pill { font: 500 11px/1 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; padding: 5px 8px; border-radius: 999px; white-space: nowrap; }
+  .pill.wait { background: var(--warn-soft); color: var(--muted); }
+  .pill.busy { background: var(--accent-soft); color: var(--accent); }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); }
+  .pill.err { background: var(--err-soft); color: var(--err); }
+  @media (max-width: 520px) { .file { grid-template-columns: 36px minmax(0, 1fr); } .right { grid-column: 2; } }
+
+  .empty { padding: 28px 16px; color: var(--muted); font-size: 14px; text-align: center; }
+
+  .proof { display: grid; gap: 12px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
+  .proof h2 { margin: 0; font-size: 14px; font-weight: 600; }
+  .sheet { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: grid; gap: 14px; }
+  .sheet svg { display: block; width: 100%; max-width: 260px; margin: 0 auto; height: auto; filter: drop-shadow(0 1px 2px rgb(0 0 0 / .12)); }
+  dl.spec { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 14px; font-size: 13px; }
+  dl.spec dt { color: var(--muted); }
+  dl.spec dd { margin: 0; font-family: var(--font-mono); font-size: 12px; overflow-wrap: anywhere; }
+  .note { font-size: 13px; color: var(--muted); margin: 0; }
+
+  .toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-size: 14px; max-width: calc(100% - 32px); box-shadow: 0 4px 16px rgb(0 0 0 / .2); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="eyebrow">ArttiCapital · Documentos</span>
+      <h1>Marca d'água de uso exclusivo</h1>
+    </div>
+    <p class="privacy">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      Os arquivos são processados no seu próprio navegador e não são enviados a nenhum servidor.
+    </p>
+  </header>
+
+  <div class="grid">
+    <main class="work">
+      <label class="drop" id="drop" tabindex="0">
+        <input type="file" id="picker" multiple accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" style="color: var(--accent)"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 17v-6m-3 3 3-3 3 3"/></svg>
+        <strong>Arraste os documentos aqui ou clique para escolher</strong>
+        <span class="hint">Vários arquivos de uma vez. A marca é aplicada em todas as páginas.</span>
+        <span class="formats"><span class="chip">PDF</span><span class="chip">JPG</span><span class="chip">PNG</span></span>
+      </label>
+
+      <section class="queue" aria-labelledby="fila-titulo">
+        <div class="queue-head">
+          <div>
+            <h2 id="fila-titulo">Documentos</h2>
+            <span class="count" id="count">nenhum arquivo</span>
+          </div>
+          <div class="actions">
+            <button type="button" id="clear" disabled>Limpar lista</button>
+            <button type="button" class="primary" id="zip" disabled>Baixar todos (.zip)</button>
+          </div>
+        </div>
+        <ul class="files" id="files"></ul>
+        <p class="empty" id="empty">Os arquivos marcados aparecem aqui, prontos para baixar.<br>O nome de cada um ganha o final <span style="font-family: var(--font-mono)">_MARCA_DAGUA</span>.</p>
+      </section>
+
+      <p class="note">Documento do Word? Abra no Word, use <em>Arquivo › Salvar como › PDF</em> e envie o PDF aqui.</p>
+    </main>
+
+    <aside class="proof" aria-labelledby="prova-titulo">
+      <h2 id="prova-titulo">Como fica cada página</h2>
+      <div class="sheet">
+        <svg viewBox="0 0 210 297" role="img" aria-label="Página A4 com a marca d'água na diagonal">
+          <rect width="210" height="297" fill="var(--paper)"/>
+          <g fill="var(--paper-line)">
+            <rect x="22" y="26" width="90" height="7" rx="1"/>
+            <rect x="22" y="46" width="166" height="3" rx="1"/><rect x="22" y="54" width="160" height="3" rx="1"/>
+            <rect x="22" y="62" width="166" height="3" rx="1"/><rect x="22" y="70" width="120" height="3" rx="1"/>
+            <rect x="22" y="86" width="166" height="3" rx="1"/><rect x="22" y="94" width="154" height="3" rx="1"/>
+            <rect x="22" y="102" width="166" height="3" rx="1"/><rect x="22" y="110" width="140" height="3" rx="1"/>
+            <rect x="22" y="126" width="74" height="40" rx="1"/><rect x="104" y="126" width="84" height="3" rx="1"/>
+            <rect x="104" y="134" width="80" height="3" rx="1"/><rect x="104" y="142" width="84" height="3" rx="1"/>
+            <rect x="22" y="182" width="166" height="3" rx="1"/><rect x="22" y="190" width="158" height="3" rx="1"/>
+            <rect x="22" y="198" width="166" height="3" rx="1"/><rect x="22" y="206" width="100" height="3" rx="1"/>
+            <rect x="22" y="222" width="166" height="3" rx="1"/><rect x="22" y="230" width="150" height="3" rx="1"/>
+            <rect x="22" y="268" width="60" height="3" rx="1"/>
+          </g>
+          <text x="105" y="148.5" transform="rotate(-54.74 105 148.5)" text-anchor="middle" dominant-baseline="central"
+                font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="15.5" textLength="309" lengthAdjust="spacingAndGlyphs"
+                fill="var(--stamp)" fill-opacity="0.55">PARA USO EXCLUSIVO DA ARTTICAPITAL</text>
+        </svg>
+        <dl class="spec">
+          <dt>Texto</dt><dd>PARA USO EXCLUSIVO DA ARTTICAPITAL</dd>
+          <dt>Posição</dt><dd>diagonal, de canto a canto</dd>
+          <dt>Tamanho</dt><dd>85% da diagonal de cada página</dd>
+          <dt>Cor</dt><dd>cinza, 30% de opacidade</dd>
+        </dl>
+      </div>
+    </aside>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+  // Mesmos parâmetros do marca_dagua.py
+  const TEXTO = "PARA USO EXCLUSIVO DA ARTTICAPITAL";
+  const COR = [0.6, 0.6, 0.6];
+  const OPACIDADE = 0.30;
+  const OCUPACAO = 0.85;
+  const SUFIXO = "_MARCA_DAGUA";
+
+  const itens = [];
+  const $ = (id) => document.getElementById(id);
+
+  // ---------- marca d'água ----------
+
+  async function marcarPdf(bytes) {
+    const { PDFDocument, StandardFonts, rgb, degrees } = PDFLib;
+    let doc;
+    try {
+      doc = await PDFDocument.load(bytes);
+    } catch (e) {
+      if (/encrypt/i.test(String(e && e.message))) throw new Error("PDF protegido por senha. Remova a proteção e envie de novo.");
+      throw new Error("Não foi possível ler este PDF. O arquivo pode estar corrompido.");
+    }
+    const fonte = await doc.embedFont(StandardFonts.HelveticaBold);
+    const larg1 = fonte.widthOfTextAtSize(TEXTO, 1);
+    const paginas = doc.getPages();
+    for (const pagina of paginas) {
+      const caixa = pagina.getCropBox();
+      const rot = ((pagina.getRotation().angle % 360) + 360) % 360;
+      const deitada = rot === 90 || rot === 270;
+      // dimensões como o leitor vê a página
+      const vl = deitada ? caixa.height : caixa.width;
+      const va = deitada ? caixa.width : caixa.height;
+      const tamanho = OCUPACAO * Math.hypot(vl, va) / larg1;
+      const largTexto = larg1 * tamanho;
+      // ângulo visível (inferior esquerdo -> superior direito) + rotação da página
+      const angulo = Math.atan2(va, vl) * 180 / Math.PI + rot;
+      const rad = angulo * Math.PI / 180;
+      const dx = Math.cos(rad), dy = Math.sin(rad);
+      const cx = caixa.x + caixa.width / 2, cy = caixa.y + caixa.height / 2;
+      const desc = tamanho * 0.35; // centraliza verticalmente as maiúsculas
+      pagina.drawText(TEXTO, {
+        x: cx - dx * largTexto / 2 + dy * desc,
+        y: cy - dy * largTexto / 2 - dx * desc,
+        size: tamanho, font: fonte,
+        color: rgb(...COR), opacity: OPACIDADE,
+        rotate: degrees(angulo),
+      });
+    }
+    return { blob: new Blob([await doc.save()], { type: "application/pdf" }), paginas: paginas.length };
+  }
+
+  async function marcarImagem(arquivo, tipo) {
+    let bmp;
+    try { bmp = await createImageBitmap(arquivo); }
+    catch { throw new Error("Não foi possível abrir esta imagem."); }
+    const l = bmp.width, a = bmp.height;
+    const canvas = document.createElement("canvas");
+    canvas.width = l; canvas.height = a;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(bmp, 0, 0);
+    const familia = "Helvetica, Arial, sans-serif";
+    ctx.font = `bold 100px ${familia}`;
+    const tamanho = 100 * OCUPACAO * Math.hypot(l, a) / ctx.measureText(TEXTO).width;
+    ctx.font = `bold ${tamanho}px ${familia}`;
+    ctx.translate(l / 2, a / 2);
+    ctx.rotate(-Math.atan2(a, l));
+    ctx.fillStyle = `rgba(${COR.map((c) => Math.round(c * 255)).join(",")},${OPACIDADE})`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(TEXTO, 0, 0);
+    const blob = await new Promise((ok) => canvas.toBlob(ok, tipo, 0.95));
+    if (!blob) throw new Error("Imagem grande demais para o navegador processar.");
+    return { blob, dimensoes: `${l}×${a}px` };
+  }
+
+  // ---------- download (claude.ai ou navegador comum) ----------
+
+  let downloadsCap;
+  function capDownloads() {
+    if (downloadsCap === undefined) {
+      downloadsCap = window.claude && typeof window.claude.use === "function"
+        ? window.claude.use("downloads").catch(() => null)
+        : Promise.resolve(null);
+    }
+    return downloadsCap;
+  }
+
+  async function salvar(nome, blob) {
+    const cap = await capDownloads();
+    if (cap) {
+      try { await cap.save({ filename: nome, data: blob }); }
+      catch (e) {
+        if (e && e.code === "declined") return;
+        if (e && e.code === "rate_limited") return aviso("Já existe um download aguardando confirmação.");
+        aviso("Não foi possível baixar o arquivo aqui.");
+      }
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url; link.download = nome;
+    document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+  }
+
+  // ---------- fila ----------
+
+  function extensao(nome) { const i = nome.lastIndexOf("."); return i < 0 ? "" : nome.slice(i + 1).toLowerCase(); }
+  function nomeSaida(nome) { const i = nome.lastIndexOf("."); return nome.slice(0, i) + SUFIXO + nome.slice(i); }
+  function tamanhoLegivel(b) { return b < 1024 * 1024 ? `${Math.max(1, Math.round(b / 1024))} KB` : `${(b / 1048576).toFixed(1).replace(".", ",")} MB`; }
+
+  function adicionar(lista) {
+    for (const arquivo of lista) {
+      const ext = extensao(arquivo.name);
+      const item = { arquivo, ext, estado: "wait", saida: null, detalhe: tamanhoLegivel(arquivo.size), erro: null };
+      if (ext === "doc" || ext === "docx") { item.estado = "err"; item.erro = "Word não é aceito aqui. Salve como PDF no Word e envie o PDF."; }
+      else if (!["pdf", "jpg", "jpeg", "png"].includes(ext)) { item.estado = "err"; item.erro = "Formato não aceito. Envie PDF, JPG ou PNG."; }
+      itens.push(item);
+    }
+    render();
+    processarFila();
+  }
+
+  let rodando = false;
+  async function processarFila() {
+    if (rodando) return;
+    rodando = true;
+    let item;
+    while ((item = itens.find((i) => i.estado === "wait"))) {
+      item.estado = "busy"; render();
+      try {
+        if (item.ext === "pdf") {
+          const r = await marcarPdf(await item.arquivo.arrayBuffer());
+          item.saida = r.blob;
+          item.detalhe = `${r.paginas} ${r.paginas === 1 ? "página" : "páginas"} · ${tamanhoLegivel(r.blob.size)}`;
+        } else {
+          const r = await marcarImagem(item.arquivo, item.ext === "png" ? "image/png" : "image/jpeg");
+          item.saida = r.blob;
+          item.detalhe = `${r.dimensoes} · ${tamanhoLegivel(r.blob.size)}`;
+        }
+        item.estado = "ok";
+      } catch (e) {
+        item.estado = "err";
+        item.erro = (e && e.message) || "Erro inesperado ao processar.";
+      }
+      render();
+    }
+    rodando = false;
+  }
+
+  const ROTULO = { wait: "Na fila", busy: "Aplicando", ok: "Pronto", err: "Erro" };
+
+  function render() {
+    const ul = $("files");
+    ul.replaceChildren();
+    for (const item of itens) {
+      const li = document.createElement("li");
+      li.className = "file";
+      const ext = document.createElement("span");
+      ext.className = "ext"; ext.textContent = item.ext || "?";
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      const nome = document.createElement("span");
+      nome.className = "name";
+      nome.textContent = item.estado === "ok" ? nomeSaida(item.arquivo.name) : item.arquivo.name;
+      nome.title = nome.textContent;
+      const det = document.createElement("span");
+      det.className = "detail" + (item.erro ? " error" : "");
+      det.textContent = item.erro || item.detalhe;
+      meta.append(nome, det);
+      const dir = document.createElement("div");
+      dir.className = "right";
+      const pill = document.createElement("span");
+      pill.className = "pill " + item.estado; pill.textContent = ROTULO[item.estado];
+      dir.append(pill);
+      if (item.estado === "ok") {
+        const b = document.createElement("button");
+        b.type = "button"; b.textContent = "Baixar";
+        b.addEventListener("click", () => salvar(nomeSaida(item.arquivo.name), item.saida));
+        dir.append(b);
+      }
+      li.append(ext, meta, dir);
+      ul.append(li);
+    }
+    const prontos = itens.filter((i) => i.estado === "ok").length;
+    $("empty").hidden = itens.length > 0;
+    $("count").textContent = itens.length === 0 ? "nenhum arquivo"
+      : `${prontos} de ${itens.length} ${itens.length === 1 ? "pronto" : "prontos"}`;
+    $("zip").disabled = prontos < 2 || rodando && itens.some((i) => i.estado === "wait" || i.estado === "busy");
+    $("clear").disabled = itens.length === 0 || itens.some((i) => i.estado === "busy");
+  }
+
+  async function baixarZip() {
+    const zip = new JSZip();
+    const usados = new Set();
+    for (const item of itens.filter((i) => i.estado === "ok")) {
+      let nome = nomeSaida(item.arquivo.name), n = 2;
+      while (usados.has(nome)) { const i = nome.lastIndexOf("."); nome = `${nome.slice(0, i)} (${n++})${nome.slice(i)}`; }
+      usados.add(nome);
+      zip.file(nome, item.saida);
+    }
+    $("zip").disabled = true;
+    try { await salvar("documentos" + SUFIXO + ".zip", await zip.generateAsync({ type: "blob" })); }
+    finally { render(); }
+  }
+
+  let timerAviso;
+  function aviso(texto) {
+    const t = $("toast");
+    t.textContent = texto; t.hidden = false;
+    clearTimeout(timerAviso);
+    timerAviso = setTimeout(() => { t.hidden = true; }, 4000);
+  }
+
+  // ---------- eventos ----------
+
+  const drop = $("drop");
+  $("picker").addEventListener("change", (e) => { adicionar([...e.target.files]); e.target.value = ""; });
+  drop.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("picker").click(); } });
+  ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach((t) => drop.addEventListener(t, () => drop.classList.remove("over")));
+  drop.addEventListener("drop", (e) => { e.preventDefault(); adicionar([...e.dataTransfer.files]); });
+  // evita que o navegador abra o arquivo se ele for solto fora da área
+  window.addEventListener("dragover", (e) => e.preventDefault());
+  window.addEventListener("drop", (e) => e.preventDefault());
+  $("zip").addEventListener("click", baixarZip);
+  $("clear").addEventListener("click", () => { itens.length = 0; render(); });
+
+  if (!window.PDFLib || !window.JSZip) {
+    aviso("Não foi possível carregar os componentes da página. Verifique a conexão com a internet e recarregue.");
+  }
+  render();
+</script>
+</body>
+</html>
