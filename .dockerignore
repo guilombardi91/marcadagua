@@ -2,3 +2,4 @@
 !Dockerfile
 !nginx.conf
 !web/
+!docker/

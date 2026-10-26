@@ -7,12 +7,13 @@ Aplica a marca d'água diagonal **"PARA USO EXCLUSIVO DA ARTTICAPITAL"** em toda
 Página única que processa PDFs, JPGs e PNGs no próprio navegador: os arquivos não são enviados a nenhum servidor.
 
 Deploy (Easypanel): serviço **App** com source GitHub, build por **Dockerfile**, porta interna **80**.
+O acesso exige login e senha, definidos pelas variáveis `AUTH_USER` e `AUTH_PASSWORD` (veja `.env.example`). Sem elas o container não sobe.
 
 Para testar localmente:
 
 ```
 docker build -t marca-dagua .
-docker run --rm -p 8080:80 marca-dagua
+docker run --rm -p 8080:80 --env-file .env marca-dagua
 ```
 
 ## Versão desktop (`marca_dagua.py`)
