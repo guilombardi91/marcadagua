@@ -6,6 +6,11 @@ Aplica a marca d'água diagonal **"PARA USO EXCLUSIVO DA ARTTICAPITAL"** em toda
 
 Página única que processa PDFs, JPGs e PNGs no próprio navegador: os arquivos não são enviados a nenhum servidor.
 
+Dois modos:
+
+- **Protegido** (padrão): a marca é repetida pela página inteira e cada página vira uma imagem (200 dpi) com a marca gravada nela. O PDF sai bloqueado para edição e cópia (impressão liberada), com senha de proprietário aleatória e descartada. O texto deixa de ser selecionável.
+- **Simples**: uma marca diagonal em texto sobre o PDF original. Mantém o texto pesquisável, mas a marca pode ser apagada num editor de PDF.
+
 Deploy (Easypanel): serviço **App** com source GitHub, build por **Dockerfile**, porta interna **80**.
 O acesso exige login e senha, definidos pelas variáveis `AUTH_USER` e `AUTH_PASSWORD` (veja `.env.example`). Sem elas o container não sobe.
 

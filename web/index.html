@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-  /* Layout: ferramenta de duas colunas — área de trabalho (envio + fila) à esquerda, prova da página à direita */
+  /* Layout: ferramenta de duas colunas — área de trabalho (modo + envio + fila) à esquerda, prova da página à direita */
   :root {
     --bg: #EEF1F0; --surface: #FFFFFF; --fg: #14201D; --muted: #5B6B66; --line: #D5DCD9;
     --accent: #0E6B57; --accent-ink: #FFFFFF; --accent-soft: #DCEDE7;
@@ -47,12 +47,13 @@
     padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
   .wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 24px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
   header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
   .brand { display: grid; gap: 4px; }
   .eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
   h1 { margin: 0; font-size: clamp(24px, 3.4vw, 32px); line-height: 1.15; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
-  .privacy { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); max-width: 42ch; }
+  .privacy { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); max-width: 42ch; margin: 0; }
   .privacy svg { flex: none; color: var(--accent); }
 
   .grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: start; }
@@ -60,9 +61,18 @@
 
   .work { display: grid; gap: 16px; min-width: 0; }
 
+  fieldset.mode { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  @media (max-width: 560px) { fieldset.mode { grid-template-columns: minmax(0, 1fr); } }
+  .mode-opt { position: relative; display: grid; gap: 3px; align-content: start; padding: 12px 14px 12px 40px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); cursor: pointer; }
+  .mode-opt input { position: absolute; left: 14px; top: 15px; margin: 0; accent-color: var(--accent); }
+  .mode-opt:has(input:checked) { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .mode-opt:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .mode-opt strong { font-size: 14px; font-weight: 600; }
+  .mode-opt span { font-size: 13px; color: var(--muted); line-height: 1.45; }
+
   .drop {
     position: relative; display: grid; place-items: center; text-align: center; gap: 10px;
-    padding: 36px 20px; border: 1.5px dashed var(--line); border-radius: var(--radius);
+    padding: 32px 20px; border: 1.5px dashed var(--line); border-radius: var(--radius);
     background: var(--surface); cursor: pointer; transition: border-color .15s, background .15s;
   }
   .drop:hover, .drop:focus-visible, .drop.over { border-color: var(--accent); background: var(--accent-soft); outline: none; }
@@ -101,7 +111,7 @@
   .pill.err { background: var(--err-soft); color: var(--err); }
   @media (max-width: 520px) { .file { grid-template-columns: 36px minmax(0, 1fr); } .right { grid-column: 2; } }
 
-  .empty { padding: 28px 16px; color: var(--muted); font-size: 14px; text-align: center; }
+  .empty { padding: 28px 16px; color: var(--muted); font-size: 14px; text-align: center; margin: 0; }
 
   .proof { display: grid; gap: 12px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); }
   .proof h2 { margin: 0; font-size: 14px; font-weight: 600; }
@@ -132,6 +142,20 @@
 
   <div class="grid">
     <main class="work">
+      <fieldset class="mode">
+        <legend class="sr">Modo da marca d'água</legend>
+        <label class="mode-opt">
+          <input type="radio" name="modo" id="modo-protegido" value="protegido" checked>
+          <strong>Protegido</strong>
+          <span>Marca repetida pela página inteira e gravada na imagem. PDF bloqueado para edição. O texto deixa de ser selecionável.</span>
+        </label>
+        <label class="mode-opt">
+          <input type="radio" name="modo" id="modo-simples" value="simples">
+          <strong>Simples</strong>
+          <span>Uma marca diagonal. O texto continua pesquisável, mas a marca pode ser apagada num editor de PDF.</span>
+        </label>
+      </fieldset>
+
       <label class="drop" id="drop" tabindex="0">
         <input type="file" id="picker" multiple accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" style="color: var(--accent)"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 17v-6m-3 3 3-3 3 3"/></svg>
@@ -161,7 +185,8 @@
     <aside class="proof" aria-labelledby="prova-titulo">
       <h2 id="prova-titulo">Como fica cada página</h2>
       <div class="sheet">
-        <svg viewBox="0 0 210 297" role="img" aria-label="Página A4 com a marca d'água na diagonal">
+        <svg viewBox="0 0 210 297" role="img" aria-label="Página A4 com a marca d'água">
+          <defs><clipPath id="folha"><rect width="210" height="297"/></clipPath></defs>
           <rect width="210" height="297" fill="var(--paper)"/>
           <g fill="var(--paper-line)">
             <rect x="22" y="26" width="90" height="7" rx="1"/>
@@ -176,16 +201,9 @@
             <rect x="22" y="222" width="166" height="3" rx="1"/><rect x="22" y="230" width="150" height="3" rx="1"/>
             <rect x="22" y="268" width="60" height="3" rx="1"/>
           </g>
-          <text x="105" y="148.5" transform="rotate(-54.74 105 148.5)" text-anchor="middle" dominant-baseline="central"
-                font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="15.5" textLength="309" lengthAdjust="spacingAndGlyphs"
-                fill="var(--stamp)" fill-opacity="0.55">PARA USO EXCLUSIVO DA ARTTICAPITAL</text>
+          <g id="prova-marca" clip-path="url(#folha)" fill="var(--stamp)" font-family="Helvetica, Arial, sans-serif" font-weight="700"></g>
         </svg>
-        <dl class="spec">
-          <dt>Texto</dt><dd>PARA USO EXCLUSIVO DA ARTTICAPITAL</dd>
-          <dt>Posição</dt><dd>diagonal, de canto a canto</dd>
-          <dt>Tamanho</dt><dd>85% da diagonal de cada página</dd>
-          <dt>Cor</dt><dd>cinza, 30% de opacidade</dd>
-        </dl>
+        <dl class="spec" id="spec"></dl>
       </div>
     </aside>
   </div>
@@ -194,20 +212,91 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-  // Mesmos parâmetros do marca_dagua.py
+  // Mesmos parâmetros do marca_dagua.py (modo simples)
   const TEXTO = "PARA USO EXCLUSIVO DA ARTTICAPITAL";
   const COR = [0.6, 0.6, 0.6];
   const OPACIDADE = 0.30;
   const OCUPACAO = 0.85;
   const SUFIXO = "_MARCA_DAGUA";
 
+  // Modo protegido: marca repetida em mosaico, gravada na imagem da página
+  const MOSAICO = {
+    tamanho: 0.03,    // altura da letra, em fração da diagonal da página
+    espacoX: 2.5,     // espaço entre repetições na mesma linha, em alturas de letra
+    espacoY: 4,       // distância entre linhas, em alturas de letra
+    opacidade: 0.24,
+    dpi: 200,         // resolução das páginas rasterizadas
+    maxLado: 6000,    // limite em pixels para páginas muito grandes
+    jpeg: 0.85,
+  };
+  const FONTE_CANVAS = "Helvetica, Arial, sans-serif";
+  const PDFJS_DADOS = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/";
+
   const itens = [];
   const $ = (id) => document.getElementById(id);
+  const corCanvas = (opacidade) => `rgba(${COR.map((c) => Math.round(c * 255)).join(",")},${opacidade})`;
 
-  // ---------- marca d'água ----------
+  if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  }
 
-  async function marcarPdf(bytes) {
+  // ---------- geometria do mosaico (usada no canvas e na prévia) ----------
+
+  const medidor = document.createElement("canvas").getContext("2d");
+  function larguraTexto(tamanho) {
+    medidor.font = `bold ${tamanho}px ${FONTE_CANVAS}`;
+    return medidor.measureText(TEXTO).width;
+  }
+
+  // Posições (em torno do centro, já no sistema girado) de cada repetição do texto
+  function geometriaMosaico(l, a) {
+    const diag = Math.hypot(l, a);
+    const tamanho = diag * MOSAICO.tamanho;
+    const passoX = larguraTexto(tamanho) + tamanho * MOSAICO.espacoX;
+    const passoY = tamanho * MOSAICO.espacoY;
+    const linhas = Math.ceil(diag / 2 / passoY) + 1;
+    const colunas = Math.ceil((diag / 2) / passoX) + 1;
+    const pos = [];
+    for (let i = -linhas; i <= linhas; i++) {
+      const desloc = (Math.abs(i) % 2) * passoX / 2;
+      for (let j = -colunas; j <= colunas; j++) pos.push([j * passoX + desloc, i * passoY]);
+    }
+    return { tamanho, angulo: -Math.atan2(a, l), pos };
+  }
+
+  function desenharMosaico(ctx, l, a) {
+    const g = geometriaMosaico(l, a);
+    ctx.save();
+    ctx.translate(l / 2, a / 2);
+    ctx.rotate(g.angulo);
+    ctx.font = `bold ${g.tamanho}px ${FONTE_CANVAS}`;
+    ctx.fillStyle = corCanvas(MOSAICO.opacidade);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    for (const [x, y] of g.pos) ctx.fillText(TEXTO, x, y);
+    ctx.restore();
+  }
+
+  function desenharSimples(ctx, l, a) {
+    ctx.save();
+    ctx.font = `bold 100px ${FONTE_CANVAS}`;
+    const tamanho = 100 * OCUPACAO * Math.hypot(l, a) / ctx.measureText(TEXTO).width;
+    ctx.font = `bold ${tamanho}px ${FONTE_CANVAS}`;
+    ctx.translate(l / 2, a / 2);
+    ctx.rotate(-Math.atan2(a, l));
+    ctx.fillStyle = corCanvas(OPACIDADE);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(TEXTO, 0, 0);
+    ctx.restore();
+  }
+
+  // ---------- modo simples: texto vetorial sobre o PDF original ----------
+
+  async function marcarPdfSimples(bytes) {
     const { PDFDocument, StandardFonts, rgb, degrees } = PDFLib;
     let doc;
     try {
@@ -245,7 +334,75 @@
     return { blob: new Blob([await doc.save()], { type: "application/pdf" }), paginas: paginas.length };
   }
 
-  async function marcarImagem(arquivo, tipo) {
+  // ---------- modo protegido: página vira imagem com a marca, PDF bloqueado para edição ----------
+
+  function senhaAleatoria() {
+    const b = crypto.getRandomValues(new Uint8Array(24));
+    return Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
+  }
+
+  function canvasParaBytes(canvas) {
+    return new Promise((ok, falha) => canvas.toBlob((b) => {
+      if (!b) return falha(new Error("Página grande demais para o navegador processar."));
+      b.arrayBuffer().then((buf) => ok(new Uint8Array(buf)), falha);
+    }, "image/jpeg", MOSAICO.jpeg));
+  }
+
+  async function marcarPdfProtegido(bytes, progresso) {
+    let origem;
+    try {
+      origem = await pdfjsLib.getDocument({
+        data: bytes, isEvalSupported: false,
+        standardFontDataUrl: PDFJS_DADOS + "standard_fonts/",
+        cMapUrl: PDFJS_DADOS + "cmaps/", cMapPacked: true,
+      }).promise;
+    } catch (e) {
+      if (e && e.name === "PasswordException") throw new Error("PDF protegido por senha. Remova a proteção e envie de novo.");
+      throw new Error("Não foi possível ler este PDF. O arquivo pode estar corrompido.");
+    }
+    const { jsPDF } = window.jspdf;
+    let saida = null;
+    const canvas = document.createElement("canvas");
+    try {
+      for (let n = 1; n <= origem.numPages; n++) {
+        progresso(n, origem.numPages);
+        const pagina = await origem.getPage(n);
+        const base = pagina.getViewport({ scale: 1 }); // em pontos, já com a rotação da página
+        const escala = Math.min(MOSAICO.dpi / 72, MOSAICO.maxLado / Math.max(base.width, base.height));
+        const vista = pagina.getViewport({ scale: escala });
+        canvas.width = Math.floor(vista.width);
+        canvas.height = Math.floor(vista.height);
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        await pagina.render({ canvasContext: ctx, viewport: vista }).promise;
+        desenharMosaico(ctx, canvas.width, canvas.height);
+        const jpeg = await canvasParaBytes(canvas);
+
+        const formato = [base.width, base.height];
+        const orientacao = base.width > base.height ? "l" : "p";
+        if (!saida) {
+          saida = new jsPDF({
+            unit: "pt", format: formato, orientation: orientacao, compress: true,
+            // sem senha para abrir; a senha de proprietário é aleatória e descartada,
+            // então ninguém consegue liberar a edição pelo leitor de PDF
+            encryption: { userPassword: "", ownerPassword: senhaAleatoria(), userPermissions: ["print"] },
+          });
+        } else {
+          saida.addPage(formato, orientacao);
+        }
+        saida.addImage(jpeg, "JPEG", 0, 0, base.width, base.height, undefined, "NONE");
+        pagina.cleanup();
+      }
+    } finally {
+      canvas.width = canvas.height = 0;
+      origem.destroy();
+    }
+    saida.setProperties({ title: TEXTO, creator: "Marca d'água ArttiCapital" });
+    return { blob: saida.output("blob"), paginas: origem.numPages };
+  }
+
+  async function marcarImagem(arquivo, tipo, modo) {
     let bmp;
     try { bmp = await createImageBitmap(arquivo); }
     catch { throw new Error("Não foi possível abrir esta imagem."); }
@@ -254,16 +411,7 @@
     canvas.width = l; canvas.height = a;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(bmp, 0, 0);
-    const familia = "Helvetica, Arial, sans-serif";
-    ctx.font = `bold 100px ${familia}`;
-    const tamanho = 100 * OCUPACAO * Math.hypot(l, a) / ctx.measureText(TEXTO).width;
-    ctx.font = `bold ${tamanho}px ${familia}`;
-    ctx.translate(l / 2, a / 2);
-    ctx.rotate(-Math.atan2(a, l));
-    ctx.fillStyle = `rgba(${COR.map((c) => Math.round(c * 255)).join(",")},${OPACIDADE})`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(TEXTO, 0, 0);
+    (modo === "protegido" ? desenharMosaico : desenharSimples)(ctx, l, a);
     const blob = await new Promise((ok) => canvas.toBlob(ok, tipo, 0.95));
     if (!blob) throw new Error("Imagem grande demais para o navegador processar.");
     return { blob, dimensoes: `${l}×${a}px` };
@@ -299,16 +447,72 @@
     setTimeout(() => URL.revokeObjectURL(url), 30000);
   }
 
+  // ---------- modo escolhido + prévia ----------
+
+  function modoAtual() { return $("modo-simples").checked ? "simples" : "protegido"; }
+
+  const SPEC = {
+    protegido: [
+      ["Texto", TEXTO],
+      ["Posição", "diagonal, repetida pela página inteira"],
+      ["Gravação", `na imagem da página, ${MOSAICO.dpi} dpi`],
+      ["Edição", "bloqueada; impressão liberada"],
+      ["Cor", `cinza, ${Math.round(MOSAICO.opacidade * 100)}% de opacidade`],
+    ],
+    simples: [
+      ["Texto", TEXTO],
+      ["Posição", "diagonal, de canto a canto"],
+      ["Tamanho", `${Math.round(OCUPACAO * 100)}% da diagonal de cada página`],
+      ["Cor", `cinza, ${Math.round(OPACIDADE * 100)}% de opacidade`],
+    ],
+  };
+
+  function atualizarProva() {
+    const modo = modoAtual();
+    const g = $("prova-marca");
+    const ns = "http://www.w3.org/2000/svg";
+    g.replaceChildren();
+    const grupo = document.createElementNS(ns, "g");
+    grupo.setAttribute("transform", `translate(105 148.5) rotate(${-Math.atan2(297, 210) * 180 / Math.PI})`);
+    const texto = (x, y, tamanho, opacidade, comprimento) => {
+      const t = document.createElementNS(ns, "text");
+      t.setAttribute("x", x); t.setAttribute("y", y);
+      t.setAttribute("text-anchor", "middle"); t.setAttribute("dominant-baseline", "central");
+      t.setAttribute("font-size", tamanho); t.setAttribute("fill-opacity", opacidade);
+      if (comprimento) { t.setAttribute("textLength", comprimento); t.setAttribute("lengthAdjust", "spacingAndGlyphs"); }
+      t.textContent = TEXTO;
+      grupo.append(t);
+    };
+    if (modo === "protegido") {
+      const m = geometriaMosaico(210, 297);
+      for (const [x, y] of m.pos) texto(x.toFixed(1), y.toFixed(1), m.tamanho.toFixed(2), 0.5);
+    } else {
+      texto(0, 0, 15.5, 0.55, (OCUPACAO * Math.hypot(210, 297)).toFixed(1));
+    }
+    g.append(grupo);
+
+    const dl = $("spec");
+    dl.replaceChildren();
+    for (const [rotulo, valor] of SPEC[modo]) {
+      const dt = document.createElement("dt"); dt.textContent = rotulo;
+      const dd = document.createElement("dd"); dd.textContent = valor;
+      dl.append(dt, dd);
+    }
+    try { localStorage.setItem("marca-dagua-modo", modo); } catch {}
+  }
+
   // ---------- fila ----------
 
   function extensao(nome) { const i = nome.lastIndexOf("."); return i < 0 ? "" : nome.slice(i + 1).toLowerCase(); }
   function nomeSaida(nome) { const i = nome.lastIndexOf("."); return nome.slice(0, i) + SUFIXO + nome.slice(i); }
   function tamanhoLegivel(b) { return b < 1024 * 1024 ? `${Math.max(1, Math.round(b / 1024))} KB` : `${(b / 1048576).toFixed(1).replace(".", ",")} MB`; }
+  function plural(n, um, varios) { return `${n} ${n === 1 ? um : varios}`; }
 
   function adicionar(lista) {
+    const modo = modoAtual();
     for (const arquivo of lista) {
       const ext = extensao(arquivo.name);
-      const item = { arquivo, ext, estado: "wait", saida: null, detalhe: tamanhoLegivel(arquivo.size), erro: null };
+      const item = { arquivo, ext, modo, estado: "wait", saida: null, detalhe: tamanhoLegivel(arquivo.size), erro: null };
       if (ext === "doc" || ext === "docx") { item.estado = "err"; item.erro = "Word não é aceito aqui. Salve como PDF no Word e envie o PDF."; }
       else if (!["pdf", "jpg", "jpeg", "png"].includes(ext)) { item.estado = "err"; item.erro = "Formato não aceito. Envie PDF, JPG ou PNG."; }
       itens.push(item);
@@ -325,14 +529,18 @@
     while ((item = itens.find((i) => i.estado === "wait"))) {
       item.estado = "busy"; render();
       try {
+        const rotuloModo = item.modo === "protegido" ? "protegido" : "simples";
         if (item.ext === "pdf") {
-          const r = await marcarPdf(await item.arquivo.arrayBuffer());
+          const bytes = new Uint8Array(await item.arquivo.arrayBuffer());
+          const r = item.modo === "protegido"
+            ? await marcarPdfProtegido(bytes, (n, total) => { item.detalhe = `página ${n} de ${total}`; render(); })
+            : await marcarPdfSimples(bytes);
           item.saida = r.blob;
-          item.detalhe = `${r.paginas} ${r.paginas === 1 ? "página" : "páginas"} · ${tamanhoLegivel(r.blob.size)}`;
+          item.detalhe = `${plural(r.paginas, "página", "páginas")} · ${rotuloModo} · ${tamanhoLegivel(r.blob.size)}`;
         } else {
-          const r = await marcarImagem(item.arquivo, item.ext === "png" ? "image/png" : "image/jpeg");
+          const r = await marcarImagem(item.arquivo, item.ext === "png" ? "image/png" : "image/jpeg", item.modo);
           item.saida = r.blob;
-          item.detalhe = `${r.dimensoes} · ${tamanhoLegivel(r.blob.size)}`;
+          item.detalhe = `${r.dimensoes} · ${rotuloModo} · ${tamanhoLegivel(r.blob.size)}`;
         }
         item.estado = "ok";
       } catch (e) {
@@ -342,6 +550,7 @@
       render();
     }
     rodando = false;
+    render();
   }
 
   const ROTULO = { wait: "Na fila", busy: "Aplicando", ok: "Pronto", err: "Erro" };
@@ -382,8 +591,8 @@
     $("empty").hidden = itens.length > 0;
     $("count").textContent = itens.length === 0 ? "nenhum arquivo"
       : `${prontos} de ${itens.length} ${itens.length === 1 ? "pronto" : "prontos"}`;
-    $("zip").disabled = prontos < 2 || rodando && itens.some((i) => i.estado === "wait" || i.estado === "busy");
-    $("clear").disabled = itens.length === 0 || itens.some((i) => i.estado === "busy");
+    $("zip").disabled = prontos < 2 || rodando;
+    $("clear").disabled = itens.length === 0 || rodando;
   }
 
   async function baixarZip() {
@@ -421,11 +630,16 @@
   window.addEventListener("drop", (e) => e.preventDefault());
   $("zip").addEventListener("click", baixarZip);
   $("clear").addEventListener("click", () => { itens.length = 0; render(); });
+  document.querySelectorAll('input[name="modo"]').forEach((r) => r.addEventListener("change", atualizarProva));
 
-  if (!window.PDFLib || !window.JSZip) {
+  try { if (localStorage.getItem("marca-dagua-modo") === "simples") $("modo-simples").checked = true; } catch {}
+  if (!window.PDFLib || !window.JSZip || !window.pdfjsLib || !window.jspdf) {
     aviso("Não foi possível carregar os componentes da página. Verifique a conexão com a internet e recarregue.");
   }
+  atualizarProva();
   render();
+  // a fonte da prévia pode chegar depois; recalcula as medidas quando carregar
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(atualizarProva);
 </script>
 </body>
 </html>
