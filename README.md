@@ -1,10 +1,17 @@
 # Marca d'água ArttiCapital
 
-Aplica a marca d'água diagonal **"PARA USO EXCLUSIVO DA ARTTICAPITAL"** em todas as páginas de documentos.
+Aplica uma marca d'água diagonal em todas as páginas de documentos. O texto padrão é **"PARA USO EXCLUSIVO DA ARTTICAPITAL"**.
 
 ## Versão web (`web/index.html`)
 
 Página única que processa PDFs, JPGs e PNGs no próprio navegador: os arquivos não são enviados a nenhum servidor.
+
+Texto da marca:
+
+- O texto padrão vem pré-selecionado sempre que a página abre.
+- Dá para escrever outro texto no campo livre (até 80 caracteres) e clicar em **Salvar** (ou Enter) para guardá-lo na lista. Os textos salvos ficam no `localStorage` do navegador: valem só naquele navegador/computador e somem se os dados do site forem apagados.
+- Sem texto escolhido (campo livre vazio ou texto selecionado removido), o envio de arquivos fica travado.
+- No modo simples, o texto precisa usar o alfabeto latino (acentos são aceitos; emoji não). O modo protegido aceita qualquer caractere.
 
 Dois modos:
 
@@ -32,4 +39,4 @@ python marca_dagua.py arquivo.pdf pasta\
 
 Ou arraste arquivos/pastas sobre o `MARCAR.bat`. O resultado é salvo ao lado do original com o sufixo `_MARCA_DAGUA`.
 
-Texto, cor, opacidade e tamanho da marca ficam nas constantes do início de `marca_dagua.py` e do `<script>` em `web/index.html`.
+A versão desktop usa sempre o texto da constante `TEXTO`, no início de `marca_dagua.py`. Cor, opacidade e tamanho da marca ficam nas constantes do início de `marca_dagua.py` e do `<script>` em `web/index.html` (onde o texto padrão é `TEXTO_PADRAO`).

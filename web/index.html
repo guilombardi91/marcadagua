@@ -70,6 +70,27 @@
   .mode-opt strong { font-size: 14px; font-weight: 600; }
   .mode-opt span { font-size: 13px; color: var(--muted); line-height: 1.45; }
 
+  .textos { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .textos-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  .textos-head h2 { margin: 0; font-size: 14px; font-weight: 600; }
+  .textos-head span { font-size: 12px; color: var(--muted); }
+  .textos fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+  ul.lista-textos { list-style: none; margin: 0; padding: 0; }
+  .texto-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; padding-right: 12px; border-bottom: 1px solid var(--line); }
+  .texto-row:has(input[type="radio"]:checked) { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+  .texto-opt { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 11px 0 11px 16px; cursor: pointer; }
+  .texto-row input[type="radio"] { flex: none; margin: 0; accent-color: var(--accent); }
+  .texto-valor { font-weight: 600; font-size: 14px; letter-spacing: .02em; overflow-wrap: anywhere; }
+  .tag { font: 500 11px/1 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; padding: 5px 8px; border-radius: 999px; background: var(--warn-soft); color: var(--muted); }
+  button.remover { padding: 7px 10px; font-weight: 500; font-size: 12px; color: var(--muted); background: transparent; border-color: transparent; }
+  button.remover:hover { color: var(--err); border-color: var(--line); }
+  .texto-row.outro { grid-template-columns: auto minmax(0, 1fr) auto; padding: 10px 12px 10px 16px; border-bottom: 0; }
+  .texto-row.outro input[type="text"] { width: 100%; min-width: 0; font: 500 14px/1.3 var(--font-ui); padding: 8px 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--fg); }
+  .texto-row.outro input[type="text"]::placeholder { color: var(--muted); }
+  .texto-row.outro input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+  @media (max-width: 420px) { .texto-row.outro { grid-template-columns: auto minmax(0, 1fr); } .texto-row.outro button { grid-column: 2; justify-self: start; } }
+  .texto-aviso { margin: 0; padding: 10px 16px; border-top: 1px solid var(--line); background: var(--err-soft); color: var(--err); font-size: 13px; }
+
   .drop {
     position: relative; display: grid; place-items: center; text-align: center; gap: 10px;
     padding: 32px 20px; border: 1.5px dashed var(--line); border-radius: var(--radius);
@@ -81,6 +102,11 @@
   .drop .formats { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
   .chip { font: 500 11px/1 var(--font-mono); letter-spacing: .04em; padding: 5px 7px; border-radius: 4px; background: var(--warn-soft); color: var(--muted); }
   .drop input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  /* sem texto escolhido, a área de envio fica travada */
+  .drop.bloqueado, .drop.bloqueado:hover { border-color: var(--line); background: var(--surface); cursor: not-allowed; }
+  .drop.bloqueado:focus-visible { border-color: var(--err); }
+  .drop.bloqueado > :not(.hint) { opacity: .4; }
+  .drop.bloqueado .hint { color: var(--err); }
 
   .queue { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
   .queue-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
@@ -142,6 +168,23 @@
 
   <div class="grid">
     <main class="work">
+      <section class="textos" id="textos" aria-labelledby="texto-titulo">
+        <div class="textos-head">
+          <h2 id="texto-titulo">Texto da marca d'água</h2>
+          <span>Os textos salvos ficam guardados neste navegador.</span>
+        </div>
+        <fieldset>
+          <legend class="sr">Escolha o texto da marca d'água</legend>
+          <ul class="lista-textos" id="lista-textos"></ul>
+          <div class="texto-row outro">
+            <input type="radio" name="texto" id="texto-outro" value="" aria-label="Outro texto">
+            <input type="text" id="texto-livre" maxlength="80" placeholder="Escreva outro texto" autocomplete="off" aria-label="Outro texto da marca d'água">
+            <button type="button" id="salvar-texto" disabled>Salvar</button>
+          </div>
+        </fieldset>
+        <p class="texto-aviso" id="texto-aviso" hidden>Sem texto, nenhum arquivo é marcado. Escreva um no campo acima ou escolha um da lista.</p>
+      </section>
+
       <fieldset class="mode">
         <legend class="sr">Modo da marca d'água</legend>
         <label class="mode-opt">
@@ -160,7 +203,7 @@
         <input type="file" id="picker" multiple accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" style="color: var(--accent)"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 17v-6m-3 3 3-3 3 3"/></svg>
         <strong>Arraste os documentos aqui ou clique para escolher</strong>
-        <span class="hint">Vários arquivos de uma vez. A marca é aplicada em todas as páginas.</span>
+        <span class="hint" id="drop-hint">Vários arquivos de uma vez. A marca é aplicada em todas as páginas.</span>
         <span class="formats"><span class="chip">PDF</span><span class="chip">JPG</span><span class="chip">PNG</span></span>
       </label>
 
@@ -215,8 +258,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
+  // Texto da marca: o padrão vem pré-selecionado; outros podem ser escritos e salvos neste navegador
+  const TEXTO_PADRAO = "PARA USO EXCLUSIVO DA ARTTICAPITAL";
+  const TEXTO_MAX = 80;
+  const CHAVE_TEXTOS = "marca-dagua-textos";
+
   // Mesmos parâmetros do marca_dagua.py (modo simples)
-  const TEXTO = "PARA USO EXCLUSIVO DA ARTTICAPITAL";
   const COR = [0.6, 0.6, 0.6];
   const OPACIDADE = 0.30;
   const OCUPACAO = 0.85;
@@ -246,16 +293,25 @@
   // ---------- geometria do mosaico (usada no canvas e na prévia) ----------
 
   const medidor = document.createElement("canvas").getContext("2d");
-  function larguraTexto(tamanho) {
+  function larguraTexto(tamanho, texto) {
     medidor.font = `bold ${tamanho}px ${FONTE_CANVAS}`;
-    return medidor.measureText(TEXTO).width;
+    return medidor.measureText(texto).width;
+  }
+
+  // Tamanho da letra no modo simples: o texto ocupa OCUPACAO da diagonal, mas textos
+  // curtos encolhem para as letras não saírem pelos cantos da página.
+  // larg1 = largura do texto com letra de tamanho 1.
+  function tamanhoSimples(l, a, larg1) {
+    const diag = Math.hypot(l, a);
+    const m = Math.min(l, a) / Math.max(l, a);
+    return Math.min(OCUPACAO * diag / larg1, m * diag / (1 + m * larg1));
   }
 
   // Posições (em torno do centro, já no sistema girado) de cada repetição do texto
-  function geometriaMosaico(l, a) {
+  function geometriaMosaico(l, a, texto) {
     const diag = Math.hypot(l, a);
     const tamanho = diag * MOSAICO.tamanho;
-    const passoX = larguraTexto(tamanho) + tamanho * MOSAICO.espacoX;
+    const passoX = larguraTexto(tamanho, texto) + tamanho * MOSAICO.espacoX;
     const passoY = tamanho * MOSAICO.espacoY;
     const linhas = Math.ceil(diag / 2 / passoY) + 1;
     const colunas = Math.ceil((diag / 2) / passoX) + 1;
@@ -267,8 +323,8 @@
     return { tamanho, angulo: -Math.atan2(a, l), pos };
   }
 
-  function desenharMosaico(ctx, l, a) {
-    const g = geometriaMosaico(l, a);
+  function desenharMosaico(ctx, l, a, texto) {
+    const g = geometriaMosaico(l, a, texto);
     ctx.save();
     ctx.translate(l / 2, a / 2);
     ctx.rotate(g.angulo);
@@ -276,27 +332,26 @@
     ctx.fillStyle = corCanvas(MOSAICO.opacidade);
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    for (const [x, y] of g.pos) ctx.fillText(TEXTO, x, y);
+    for (const [x, y] of g.pos) ctx.fillText(texto, x, y);
     ctx.restore();
   }
 
-  function desenharSimples(ctx, l, a) {
+  function desenharSimples(ctx, l, a, texto) {
     ctx.save();
-    ctx.font = `bold 100px ${FONTE_CANVAS}`;
-    const tamanho = 100 * OCUPACAO * Math.hypot(l, a) / ctx.measureText(TEXTO).width;
+    const tamanho = tamanhoSimples(l, a, larguraTexto(100, texto) / 100);
     ctx.font = `bold ${tamanho}px ${FONTE_CANVAS}`;
     ctx.translate(l / 2, a / 2);
     ctx.rotate(-Math.atan2(a, l));
     ctx.fillStyle = corCanvas(OPACIDADE);
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(TEXTO, 0, 0);
+    ctx.fillText(texto, 0, 0);
     ctx.restore();
   }
 
   // ---------- modo simples: texto vetorial sobre o PDF original ----------
 
-  async function marcarPdfSimples(bytes) {
+  async function marcarPdfSimples(bytes, texto) {
     const { PDFDocument, StandardFonts, rgb, degrees } = PDFLib;
     let doc;
     try {
@@ -306,7 +361,10 @@
       throw new Error("Não foi possível ler este PDF. O arquivo pode estar corrompido.");
     }
     const fonte = await doc.embedFont(StandardFonts.HelveticaBold);
-    const larg1 = fonte.widthOfTextAtSize(TEXTO, 1);
+    let larg1;
+    // a fonte padrão do PDF só cobre o alfabeto latino (acentos inclusos); emoji e afins não entram
+    try { larg1 = fonte.widthOfTextAtSize(texto, 1); }
+    catch { throw new Error("O texto da marca tem caracteres que o modo simples não aceita (como emoji). Use o modo protegido ou troque o texto."); }
     const paginas = doc.getPages();
     for (const pagina of paginas) {
       const caixa = pagina.getCropBox();
@@ -315,7 +373,7 @@
       // dimensões como o leitor vê a página
       const vl = deitada ? caixa.height : caixa.width;
       const va = deitada ? caixa.width : caixa.height;
-      const tamanho = OCUPACAO * Math.hypot(vl, va) / larg1;
+      const tamanho = tamanhoSimples(vl, va, larg1);
       const largTexto = larg1 * tamanho;
       // ângulo visível (inferior esquerdo -> superior direito) + rotação da página
       const angulo = Math.atan2(va, vl) * 180 / Math.PI + rot;
@@ -323,7 +381,7 @@
       const dx = Math.cos(rad), dy = Math.sin(rad);
       const cx = caixa.x + caixa.width / 2, cy = caixa.y + caixa.height / 2;
       const desc = tamanho * 0.35; // centraliza verticalmente as maiúsculas
-      pagina.drawText(TEXTO, {
+      pagina.drawText(texto, {
         x: cx - dx * largTexto / 2 + dy * desc,
         y: cy - dy * largTexto / 2 - dx * desc,
         size: tamanho, font: fonte,
@@ -348,7 +406,7 @@
     }, "image/jpeg", MOSAICO.jpeg));
   }
 
-  async function marcarPdfProtegido(bytes, progresso) {
+  async function marcarPdfProtegido(bytes, texto, progresso) {
     let origem;
     try {
       origem = await pdfjsLib.getDocument({
@@ -376,7 +434,7 @@
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         await pagina.render({ canvasContext: ctx, viewport: vista }).promise;
-        desenharMosaico(ctx, canvas.width, canvas.height);
+        desenharMosaico(ctx, canvas.width, canvas.height, texto);
         const jpeg = await canvasParaBytes(canvas);
 
         const formato = [base.width, base.height];
@@ -398,11 +456,12 @@
       canvas.width = canvas.height = 0;
       origem.destroy();
     }
-    saida.setProperties({ title: TEXTO, creator: "Marca d'água ArttiCapital" });
+    // o título dos metadados só aceita caracteres latinos; o resto é descartado
+    saida.setProperties({ title: texto.replace(/[^\x20-\x7E\xA0-\xFF]/g, "").trim(), creator: "Marca d'água ArttiCapital" });
     return { blob: saida.output("blob"), paginas: origem.numPages };
   }
 
-  async function marcarImagem(arquivo, tipo, modo) {
+  async function marcarImagem(arquivo, tipo, modo, texto) {
     let bmp;
     try { bmp = await createImageBitmap(arquivo); }
     catch { throw new Error("Não foi possível abrir esta imagem."); }
@@ -411,7 +470,7 @@
     canvas.width = l; canvas.height = a;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(bmp, 0, 0);
-    (modo === "protegido" ? desenharMosaico : desenharSimples)(ctx, l, a);
+    (modo === "protegido" ? desenharMosaico : desenharSimples)(ctx, l, a, texto);
     const blob = await new Promise((ok) => canvas.toBlob(ok, tipo, 0.95));
     if (!blob) throw new Error("Imagem grande demais para o navegador processar.");
     return { blob, dimensoes: `${l}×${a}px` };
@@ -451,54 +510,176 @@
 
   function modoAtual() { return $("modo-simples").checked ? "simples" : "protegido"; }
 
-  const SPEC = {
-    protegido: [
-      ["Texto", TEXTO],
+  function spec(modo, texto) {
+    const t = texto || "nenhum escolhido";
+    return modo === "protegido" ? [
+      ["Texto", t],
       ["Posição", "diagonal, repetida pela página inteira"],
       ["Gravação", `na imagem da página, ${MOSAICO.dpi} dpi`],
       ["Edição", "bloqueada; impressão liberada"],
       ["Cor", `cinza, ${Math.round(MOSAICO.opacidade * 100)}% de opacidade`],
-    ],
-    simples: [
-      ["Texto", TEXTO],
+    ] : [
+      ["Texto", t],
       ["Posição", "diagonal, de canto a canto"],
-      ["Tamanho", `${Math.round(OCUPACAO * 100)}% da diagonal de cada página`],
+      ["Tamanho", `até ${Math.round(OCUPACAO * 100)}% da diagonal de cada página`],
       ["Cor", `cinza, ${Math.round(OPACIDADE * 100)}% de opacidade`],
-    ],
-  };
+    ];
+  }
 
   function atualizarProva() {
     const modo = modoAtual();
+    const texto = textoAtual();
     const g = $("prova-marca");
     const ns = "http://www.w3.org/2000/svg";
     g.replaceChildren();
     const grupo = document.createElementNS(ns, "g");
     grupo.setAttribute("transform", `translate(105 148.5) rotate(${-Math.atan2(297, 210) * 180 / Math.PI})`);
-    const texto = (x, y, tamanho, opacidade, comprimento) => {
+    const linha = (x, y, tamanho, opacidade, comprimento) => {
       const t = document.createElementNS(ns, "text");
       t.setAttribute("x", x); t.setAttribute("y", y);
       t.setAttribute("text-anchor", "middle"); t.setAttribute("dominant-baseline", "central");
       t.setAttribute("font-size", tamanho); t.setAttribute("fill-opacity", opacidade);
       if (comprimento) { t.setAttribute("textLength", comprimento); t.setAttribute("lengthAdjust", "spacingAndGlyphs"); }
-      t.textContent = TEXTO;
+      t.textContent = texto;
       grupo.append(t);
     };
-    if (modo === "protegido") {
-      const m = geometriaMosaico(210, 297);
-      for (const [x, y] of m.pos) texto(x.toFixed(1), y.toFixed(1), m.tamanho.toFixed(2), 0.5);
-    } else {
-      texto(0, 0, 15.5, 0.55, (OCUPACAO * Math.hypot(210, 297)).toFixed(1));
+    if (texto && modo === "protegido") {
+      const m = geometriaMosaico(210, 297, texto);
+      for (const [x, y] of m.pos) linha(x.toFixed(1), y.toFixed(1), m.tamanho.toFixed(2), 0.5);
+    } else if (texto) {
+      const larg1 = larguraTexto(100, texto) / 100;
+      const tamanho = tamanhoSimples(210, 297, larg1);
+      linha(0, 0, tamanho.toFixed(2), 0.55, (larg1 * tamanho).toFixed(1));
     }
     g.append(grupo);
 
     const dl = $("spec");
     dl.replaceChildren();
-    for (const [rotulo, valor] of SPEC[modo]) {
+    for (const [rotulo, valor] of spec(modo, texto)) {
       const dt = document.createElement("dt"); dt.textContent = rotulo;
       const dd = document.createElement("dd"); dd.textContent = valor;
       dl.append(dt, dd);
     }
     try { localStorage.setItem("marca-dagua-modo", modo); } catch {}
+  }
+
+  // ---------- texto da marca: lista (padrão + salvos) e campo livre ----------
+
+  const normalizar = (s) => String(s).replace(/\s+/g, " ").trim();
+  const mesmoTexto = (a, b) => a.toLocaleLowerCase("pt-BR") === b.toLocaleLowerCase("pt-BR");
+  const conhecido = (t) => [TEXTO_PADRAO, ...salvos].find((x) => mesmoTexto(x, t));
+
+  function lerSalvos() {
+    try {
+      const v = JSON.parse(localStorage.getItem(CHAVE_TEXTOS) || "[]");
+      if (!Array.isArray(v)) return [];
+      const lista = [];
+      for (const t of v) {
+        const n = typeof t === "string" ? normalizar(t).slice(0, TEXTO_MAX) : "";
+        if (n && !mesmoTexto(n, TEXTO_PADRAO) && !lista.some((x) => mesmoTexto(x, n))) lista.push(n);
+      }
+      return lista;
+    } catch { return []; }
+  }
+  let salvos = lerSalvos();
+
+  function gravarSalvos(lista) {
+    try { localStorage.setItem(CHAVE_TEXTOS, JSON.stringify(lista)); return true; }
+    catch { return false; }
+  }
+
+  // Texto que será aplicado agora; vazio = nada escolhido (o envio fica travado)
+  function textoAtual() {
+    const r = document.querySelector('input[name="texto"]:checked');
+    if (!r) return "";
+    return r.id === "texto-outro" ? normalizar($("texto-livre").value) : r.value;
+  }
+
+  function renderTextos(selecionar) {
+    const ul = $("lista-textos");
+    ul.replaceChildren();
+    for (const texto of [TEXTO_PADRAO, ...salvos]) {
+      const li = document.createElement("li");
+      li.className = "texto-row";
+      const label = document.createElement("label");
+      label.className = "texto-opt";
+      const radio = document.createElement("input");
+      radio.type = "radio"; radio.name = "texto"; radio.value = texto;
+      radio.checked = texto === selecionar;
+      const valor = document.createElement("span");
+      valor.className = "texto-valor"; valor.textContent = texto;
+      label.append(radio, valor);
+      li.append(label);
+      if (texto === TEXTO_PADRAO) {
+        const tag = document.createElement("span");
+        tag.className = "tag"; tag.textContent = "padrão";
+        li.append(tag);
+      } else {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "remover"; b.textContent = "Remover";
+        b.setAttribute("aria-label", `Remover “${texto}” dos textos salvos`);
+        b.addEventListener("click", () => removerSalvo(texto));
+        li.append(b);
+      }
+      ul.append(li);
+    }
+  }
+
+  function textoMarcadoNaLista() {
+    const r = document.querySelector('#lista-textos input[name="texto"]:checked');
+    return r ? r.value : undefined;
+  }
+
+  function salvarTexto() {
+    const texto = normalizar($("texto-livre").value);
+    if (!texto || conhecido(texto)) return;
+    const nova = [...salvos, texto];
+    if (!gravarSalvos(nova)) {
+      aviso("Este navegador não permitiu salvar. O texto escrito no campo continua valendo.");
+      return;
+    }
+    salvos = nova;
+    $("texto-livre").value = "";
+    renderTextos(texto);
+    atualizarTexto();
+    document.querySelector('#lista-textos input[name="texto"]:checked').focus();
+    aviso("Texto salvo na lista.");
+  }
+
+  function removerSalvo(texto) {
+    const nova = salvos.filter((t) => t !== texto);
+    if (!gravarSalvos(nova)) { aviso("Não foi possível remover o texto neste navegador."); return; }
+    salvos = nova;
+    const marcado = textoMarcadoNaLista();
+    const estavaMarcado = marcado === texto;
+    renderTextos(estavaMarcado ? undefined : marcado);
+    atualizarTexto();
+    // o botão clicado sumiu; leva o foco para a primeira opção da lista
+    document.querySelector('#lista-textos input[name="texto"]').focus();
+    aviso(estavaMarcado ? `“${texto}” removido. Escolha outro texto para continuar.` : `“${texto}” removido dos textos salvos.`);
+  }
+
+  const HINT_DROP = $("drop-hint").textContent;
+
+  function atualizarTexto() {
+    const livre = normalizar($("texto-livre").value);
+    const jaSalvo = Boolean(livre && conhecido(livre));
+    const salvar = $("salvar-texto");
+    salvar.disabled = !livre || jaSalvo;
+    salvar.textContent = jaSalvo ? "Já salvo" : "Salvar";
+
+    const bloqueado = !textoAtual();
+    $("texto-aviso").hidden = !bloqueado;
+    $("picker").disabled = bloqueado;
+    $("drop").classList.toggle("bloqueado", bloqueado);
+    $("drop").setAttribute("aria-disabled", String(bloqueado));
+    $("drop-hint").textContent = bloqueado ? "Escolha ou escreva o texto da marca d'água para liberar o envio." : HINT_DROP;
+    atualizarProva();
+  }
+
+  function pedirTexto() {
+    aviso("Escolha ou escreva o texto da marca d'água antes de enviar os arquivos.");
+    $("texto-livre").focus();
   }
 
   // ---------- fila ----------
@@ -509,10 +690,14 @@
   function plural(n, um, varios) { return `${n} ${n === 1 ? um : varios}`; }
 
   function adicionar(lista) {
+    if (!lista.length) return;
+    // texto e modo ficam gravados em cada item: mudar a escolha depois não afeta o que já está na fila
+    const texto = textoAtual();
+    if (!texto) { pedirTexto(); return; }
     const modo = modoAtual();
     for (const arquivo of lista) {
       const ext = extensao(arquivo.name);
-      const item = { arquivo, ext, modo, estado: "wait", saida: null, detalhe: tamanhoLegivel(arquivo.size), erro: null };
+      const item = { arquivo, ext, modo, texto, estado: "wait", saida: null, detalhe: tamanhoLegivel(arquivo.size), erro: null };
       if (ext === "doc" || ext === "docx") { item.estado = "err"; item.erro = "Word não é aceito aqui. Salve como PDF no Word e envie o PDF."; }
       else if (!["pdf", "jpg", "jpeg", "png"].includes(ext)) { item.estado = "err"; item.erro = "Formato não aceito. Envie PDF, JPG ou PNG."; }
       itens.push(item);
@@ -533,14 +718,14 @@
         if (item.ext === "pdf") {
           const bytes = new Uint8Array(await item.arquivo.arrayBuffer());
           const r = item.modo === "protegido"
-            ? await marcarPdfProtegido(bytes, (n, total) => { item.detalhe = `página ${n} de ${total}`; render(); })
-            : await marcarPdfSimples(bytes);
+            ? await marcarPdfProtegido(bytes, item.texto, (n, total) => { item.detalhe = `página ${n} de ${total}`; render(); })
+            : await marcarPdfSimples(bytes, item.texto);
           item.saida = r.blob;
-          item.detalhe = `${plural(r.paginas, "página", "páginas")} · ${rotuloModo} · ${tamanhoLegivel(r.blob.size)}`;
+          item.detalhe = `${plural(r.paginas, "página", "páginas")} · ${rotuloModo} · ${tamanhoLegivel(r.blob.size)} · “${item.texto}”`;
         } else {
-          const r = await marcarImagem(item.arquivo, item.ext === "png" ? "image/png" : "image/jpeg", item.modo);
+          const r = await marcarImagem(item.arquivo, item.ext === "png" ? "image/png" : "image/jpeg", item.modo, item.texto);
           item.saida = r.blob;
-          item.detalhe = `${r.dimensoes} · ${rotuloModo} · ${tamanhoLegivel(r.blob.size)}`;
+          item.detalhe = `${r.dimensoes} · ${rotuloModo} · ${tamanhoLegivel(r.blob.size)} · “${item.texto}”`;
         }
         item.estado = "ok";
       } catch (e) {
@@ -621,8 +806,14 @@
 
   const drop = $("drop");
   $("picker").addEventListener("change", (e) => { adicionar([...e.target.files]); e.target.value = ""; });
-  drop.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("picker").click(); } });
-  ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+  drop.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault();
+    if (!textoAtual()) pedirTexto(); else $("picker").click();
+  });
+  // com o envio travado, o clique não abre a janela de arquivos: explica o motivo
+  drop.addEventListener("click", (e) => { if (!textoAtual()) { e.preventDefault(); pedirTexto(); } });
+  ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); if (textoAtual()) drop.classList.add("over"); }));
   ["dragleave", "drop"].forEach((t) => drop.addEventListener(t, () => drop.classList.remove("over")));
   drop.addEventListener("drop", (e) => { e.preventDefault(); adicionar([...e.dataTransfer.files]); });
   // evita que o navegador abra o arquivo se ele for solto fora da área
@@ -631,12 +822,20 @@
   $("zip").addEventListener("click", baixarZip);
   $("clear").addEventListener("click", () => { itens.length = 0; render(); });
   document.querySelectorAll('input[name="modo"]').forEach((r) => r.addEventListener("change", atualizarProva));
+  $("textos").addEventListener("change", (e) => { if (e.target.name === "texto") atualizarTexto(); });
+  // escrever no campo livre já escolhe a opção "outro texto"
+  $("texto-livre").addEventListener("input", () => { $("texto-outro").checked = true; atualizarTexto(); });
+  $("texto-livre").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); if (!$("salvar-texto").disabled) salvarTexto(); }
+  });
+  $("salvar-texto").addEventListener("click", salvarTexto);
 
   try { if (localStorage.getItem("marca-dagua-modo") === "simples") $("modo-simples").checked = true; } catch {}
   if (!window.PDFLib || !window.JSZip || !window.pdfjsLib || !window.jspdf) {
     aviso("Não foi possível carregar os componentes da página. Verifique a conexão com a internet e recarregue.");
   }
-  atualizarProva();
+  renderTextos(TEXTO_PADRAO); // o texto padrão sempre vem pré-selecionado ao abrir a página
+  atualizarTexto();
   render();
   // a fonte da prévia pode chegar depois; recalcula as medidas quando carregar
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(atualizarProva);
