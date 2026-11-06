@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Marca d'Água ArttiCapital</title>
+<title>Proteção de Documentos Strong Business School</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-  /* Layout: ferramenta de duas colunas — área de trabalho (modo + envio + fila) à esquerda, prova da página à direita */
+  /* Layout: ferramenta de duas colunas — área de trabalho (texto + envio + fila) à esquerda, prova da página à direita */
   :root {
     --bg: #EEF1F0; --surface: #FFFFFF; --fg: #14201D; --muted: #5B6B66; --line: #D5DCD9;
     --accent: #0E6B57; --accent-ink: #FFFFFF; --accent-soft: #DCEDE7;
@@ -53,6 +53,7 @@
   .brand { display: grid; gap: 4px; }
   .eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
   h1 { margin: 0; font-size: clamp(24px, 3.4vw, 32px); line-height: 1.15; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { margin: 2px 0 0; color: var(--muted); font-size: 14px; max-width: 56ch; }
   .privacy { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); max-width: 42ch; margin: 0; }
   .privacy svg { flex: none; color: var(--accent); }
 
@@ -60,15 +61,6 @@
   @media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } .proof { order: -1; } }
 
   .work { display: grid; gap: 16px; min-width: 0; }
-
-  fieldset.mode { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-  @media (max-width: 560px) { fieldset.mode { grid-template-columns: minmax(0, 1fr); } }
-  .mode-opt { position: relative; display: grid; gap: 3px; align-content: start; padding: 12px 14px 12px 40px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); cursor: pointer; }
-  .mode-opt input { position: absolute; left: 14px; top: 15px; margin: 0; accent-color: var(--accent); }
-  .mode-opt:has(input:checked) { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
-  .mode-opt:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .mode-opt strong { font-size: 14px; font-weight: 600; }
-  .mode-opt span { font-size: 13px; color: var(--muted); line-height: 1.45; }
 
   .textos { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
   .textos-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
@@ -157,8 +149,9 @@
 <div class="wrap">
   <header>
     <div class="brand">
-      <span class="eyebrow">ArttiCapital · Documentos</span>
-      <h1>Marca d'água de uso exclusivo</h1>
+      <span class="eyebrow">Strong Business School</span>
+      <h1>Proteção de documentos</h1>
+      <p class="lede">Grava a marca d'água em todas as páginas e bloqueia o PDF para edição.</p>
     </div>
     <p class="privacy">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
@@ -185,20 +178,6 @@
         <p class="texto-aviso" id="texto-aviso" hidden>Sem texto, nenhum arquivo é marcado. Escreva um no campo acima ou escolha um da lista.</p>
       </section>
 
-      <fieldset class="mode">
-        <legend class="sr">Modo da marca d'água</legend>
-        <label class="mode-opt">
-          <input type="radio" name="modo" id="modo-protegido" value="protegido" checked>
-          <strong>Protegido</strong>
-          <span>Marca repetida pela página inteira e gravada na imagem. PDF bloqueado para edição. O texto deixa de ser selecionável.</span>
-        </label>
-        <label class="mode-opt">
-          <input type="radio" name="modo" id="modo-simples" value="simples">
-          <strong>Simples</strong>
-          <span>Uma marca diagonal. O texto continua pesquisável, mas a marca pode ser apagada num editor de PDF.</span>
-        </label>
-      </fieldset>
-
       <label class="drop" id="drop" tabindex="0">
         <input type="file" id="picker" multiple accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" style="color: var(--accent)"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 17v-6m-3 3 3-3 3 3"/></svg>
@@ -219,7 +198,7 @@
           </div>
         </div>
         <ul class="files" id="files"></ul>
-        <p class="empty" id="empty">Os arquivos marcados aparecem aqui, prontos para baixar.<br>O nome de cada um ganha o final <span style="font-family: var(--font-mono)">_MARCA_DAGUA</span>.</p>
+        <p class="empty" id="empty">Os arquivos marcados aparecem aqui, prontos para baixar.<br>O nome de cada um ganha o final <span style="font-family: var(--font-mono)" id="sufixo">_PROTEGIDO</span>.</p>
       </section>
 
       <p class="note">Documento do Word? Abra no Word, use <em>Arquivo › Salvar como › PDF</em> e envie o PDF aqui.</p>
@@ -253,7 +232,6 @@
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -263,13 +241,10 @@
   const TEXTO_MAX = 80;
   const CHAVE_TEXTOS = "marca-dagua-textos";
 
-  // Mesmos parâmetros do marca_dagua.py (modo simples)
-  const COR = [0.6, 0.6, 0.6];
-  const OPACIDADE = 0.30;
-  const OCUPACAO = 0.85;
-  const SUFIXO = "_MARCA_DAGUA";
+  const COR = [0.6, 0.6, 0.6]; // cinza (RGB 0-1)
+  const SUFIXO = "_PROTEGIDO"; // final do nome de cada arquivo gerado
 
-  // Modo protegido: marca repetida em mosaico, gravada na imagem da página
+  // Marca repetida em mosaico, gravada na imagem da página
   const MOSAICO = {
     tamanho: 0.03,    // altura da letra, em fração da diagonal da página
     espacoX: 2.5,     // espaço entre repetições na mesma linha, em alturas de letra
@@ -296,15 +271,6 @@
   function larguraTexto(tamanho, texto) {
     medidor.font = `bold ${tamanho}px ${FONTE_CANVAS}`;
     return medidor.measureText(texto).width;
-  }
-
-  // Tamanho da letra no modo simples: o texto ocupa OCUPACAO da diagonal, mas textos
-  // curtos encolhem para as letras não saírem pelos cantos da página.
-  // larg1 = largura do texto com letra de tamanho 1.
-  function tamanhoSimples(l, a, larg1) {
-    const diag = Math.hypot(l, a);
-    const m = Math.min(l, a) / Math.max(l, a);
-    return Math.min(OCUPACAO * diag / larg1, m * diag / (1 + m * larg1));
   }
 
   // Posições (em torno do centro, já no sistema girado) de cada repetição do texto
@@ -336,63 +302,7 @@
     ctx.restore();
   }
 
-  function desenharSimples(ctx, l, a, texto) {
-    ctx.save();
-    const tamanho = tamanhoSimples(l, a, larguraTexto(100, texto) / 100);
-    ctx.font = `bold ${tamanho}px ${FONTE_CANVAS}`;
-    ctx.translate(l / 2, a / 2);
-    ctx.rotate(-Math.atan2(a, l));
-    ctx.fillStyle = corCanvas(OPACIDADE);
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(texto, 0, 0);
-    ctx.restore();
-  }
-
-  // ---------- modo simples: texto vetorial sobre o PDF original ----------
-
-  async function marcarPdfSimples(bytes, texto) {
-    const { PDFDocument, StandardFonts, rgb, degrees } = PDFLib;
-    let doc;
-    try {
-      doc = await PDFDocument.load(bytes);
-    } catch (e) {
-      if (/encrypt/i.test(String(e && e.message))) throw new Error("PDF protegido por senha. Remova a proteção e envie de novo.");
-      throw new Error("Não foi possível ler este PDF. O arquivo pode estar corrompido.");
-    }
-    const fonte = await doc.embedFont(StandardFonts.HelveticaBold);
-    let larg1;
-    // a fonte padrão do PDF só cobre o alfabeto latino (acentos inclusos); emoji e afins não entram
-    try { larg1 = fonte.widthOfTextAtSize(texto, 1); }
-    catch { throw new Error("O texto da marca tem caracteres que o modo simples não aceita (como emoji). Use o modo protegido ou troque o texto."); }
-    const paginas = doc.getPages();
-    for (const pagina of paginas) {
-      const caixa = pagina.getCropBox();
-      const rot = ((pagina.getRotation().angle % 360) + 360) % 360;
-      const deitada = rot === 90 || rot === 270;
-      // dimensões como o leitor vê a página
-      const vl = deitada ? caixa.height : caixa.width;
-      const va = deitada ? caixa.width : caixa.height;
-      const tamanho = tamanhoSimples(vl, va, larg1);
-      const largTexto = larg1 * tamanho;
-      // ângulo visível (inferior esquerdo -> superior direito) + rotação da página
-      const angulo = Math.atan2(va, vl) * 180 / Math.PI + rot;
-      const rad = angulo * Math.PI / 180;
-      const dx = Math.cos(rad), dy = Math.sin(rad);
-      const cx = caixa.x + caixa.width / 2, cy = caixa.y + caixa.height / 2;
-      const desc = tamanho * 0.35; // centraliza verticalmente as maiúsculas
-      pagina.drawText(texto, {
-        x: cx - dx * largTexto / 2 + dy * desc,
-        y: cy - dy * largTexto / 2 - dx * desc,
-        size: tamanho, font: fonte,
-        color: rgb(...COR), opacity: OPACIDADE,
-        rotate: degrees(angulo),
-      });
-    }
-    return { blob: new Blob([await doc.save()], { type: "application/pdf" }), paginas: paginas.length };
-  }
-
-  // ---------- modo protegido: página vira imagem com a marca, PDF bloqueado para edição ----------
+  // ---------- PDF: cada página vira imagem com a marca, PDF bloqueado para edição ----------
 
   function senhaAleatoria() {
     const b = crypto.getRandomValues(new Uint8Array(24));
@@ -406,7 +316,7 @@
     }, "image/jpeg", MOSAICO.jpeg));
   }
 
-  async function marcarPdfProtegido(bytes, texto, progresso) {
+  async function marcarPdf(bytes, texto, progresso) {
     let origem;
     try {
       origem = await pdfjsLib.getDocument({
@@ -457,11 +367,11 @@
       origem.destroy();
     }
     // o título dos metadados só aceita caracteres latinos; o resto é descartado
-    saida.setProperties({ title: texto.replace(/[^\x20-\x7E\xA0-\xFF]/g, "").trim(), creator: "Marca d'água ArttiCapital" });
+    saida.setProperties({ title: normalizar(texto.replace(/[^\x20-\x7E\xA0-\xFF]/g, " ")), creator: "Proteção de Documentos Strong Business School" });
     return { blob: saida.output("blob"), paginas: origem.numPages };
   }
 
-  async function marcarImagem(arquivo, tipo, modo, texto) {
+  async function marcarImagem(arquivo, tipo, texto) {
     let bmp;
     try { bmp = await createImageBitmap(arquivo); }
     catch { throw new Error("Não foi possível abrir esta imagem."); }
@@ -470,7 +380,7 @@
     canvas.width = l; canvas.height = a;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(bmp, 0, 0);
-    (modo === "protegido" ? desenharMosaico : desenharSimples)(ctx, l, a, texto);
+    desenharMosaico(ctx, l, a, texto);
     const blob = await new Promise((ok) => canvas.toBlob(ok, tipo, 0.95));
     if (!blob) throw new Error("Imagem grande demais para o navegador processar.");
     return { blob, dimensoes: `${l}×${a}px` };
@@ -506,61 +416,46 @@
     setTimeout(() => URL.revokeObjectURL(url), 30000);
   }
 
-  // ---------- modo escolhido + prévia ----------
+  // ---------- prévia ----------
 
-  function modoAtual() { return $("modo-simples").checked ? "simples" : "protegido"; }
-
-  function spec(modo, texto) {
-    const t = texto || "nenhum escolhido";
-    return modo === "protegido" ? [
-      ["Texto", t],
+  function spec(texto) {
+    return [
+      ["Texto", texto || "nenhum escolhido"],
       ["Posição", "diagonal, repetida pela página inteira"],
       ["Gravação", `na imagem da página, ${MOSAICO.dpi} dpi`],
+      ["Documento", "o texto original deixa de ser selecionável"],
       ["Edição", "bloqueada; impressão liberada"],
       ["Cor", `cinza, ${Math.round(MOSAICO.opacidade * 100)}% de opacidade`],
-    ] : [
-      ["Texto", t],
-      ["Posição", "diagonal, de canto a canto"],
-      ["Tamanho", `até ${Math.round(OCUPACAO * 100)}% da diagonal de cada página`],
-      ["Cor", `cinza, ${Math.round(OPACIDADE * 100)}% de opacidade`],
     ];
   }
 
   function atualizarProva() {
-    const modo = modoAtual();
     const texto = textoAtual();
     const g = $("prova-marca");
     const ns = "http://www.w3.org/2000/svg";
     g.replaceChildren();
     const grupo = document.createElementNS(ns, "g");
     grupo.setAttribute("transform", `translate(105 148.5) rotate(${-Math.atan2(297, 210) * 180 / Math.PI})`);
-    const linha = (x, y, tamanho, opacidade, comprimento) => {
-      const t = document.createElementNS(ns, "text");
-      t.setAttribute("x", x); t.setAttribute("y", y);
-      t.setAttribute("text-anchor", "middle"); t.setAttribute("dominant-baseline", "central");
-      t.setAttribute("font-size", tamanho); t.setAttribute("fill-opacity", opacidade);
-      if (comprimento) { t.setAttribute("textLength", comprimento); t.setAttribute("lengthAdjust", "spacingAndGlyphs"); }
-      t.textContent = texto;
-      grupo.append(t);
-    };
-    if (texto && modo === "protegido") {
+    if (texto) {
       const m = geometriaMosaico(210, 297, texto);
-      for (const [x, y] of m.pos) linha(x.toFixed(1), y.toFixed(1), m.tamanho.toFixed(2), 0.5);
-    } else if (texto) {
-      const larg1 = larguraTexto(100, texto) / 100;
-      const tamanho = tamanhoSimples(210, 297, larg1);
-      linha(0, 0, tamanho.toFixed(2), 0.55, (larg1 * tamanho).toFixed(1));
+      for (const [x, y] of m.pos) {
+        const t = document.createElementNS(ns, "text");
+        t.setAttribute("x", x.toFixed(1)); t.setAttribute("y", y.toFixed(1));
+        t.setAttribute("text-anchor", "middle"); t.setAttribute("dominant-baseline", "central");
+        t.setAttribute("font-size", m.tamanho.toFixed(2)); t.setAttribute("fill-opacity", 0.5);
+        t.textContent = texto;
+        grupo.append(t);
+      }
     }
     g.append(grupo);
 
     const dl = $("spec");
     dl.replaceChildren();
-    for (const [rotulo, valor] of spec(modo, texto)) {
+    for (const [rotulo, valor] of spec(texto)) {
       const dt = document.createElement("dt"); dt.textContent = rotulo;
       const dd = document.createElement("dd"); dd.textContent = valor;
       dl.append(dt, dd);
     }
-    try { localStorage.setItem("marca-dagua-modo", modo); } catch {}
   }
 
   // ---------- texto da marca: lista (padrão + salvos) e campo livre ----------
@@ -691,13 +586,12 @@
 
   function adicionar(lista) {
     if (!lista.length) return;
-    // texto e modo ficam gravados em cada item: mudar a escolha depois não afeta o que já está na fila
+    // o texto fica gravado em cada item: mudar a escolha depois não afeta o que já está na fila
     const texto = textoAtual();
     if (!texto) { pedirTexto(); return; }
-    const modo = modoAtual();
     for (const arquivo of lista) {
       const ext = extensao(arquivo.name);
-      const item = { arquivo, ext, modo, texto, estado: "wait", saida: null, detalhe: tamanhoLegivel(arquivo.size), erro: null };
+      const item = { arquivo, ext, texto, estado: "wait", saida: null, detalhe: tamanhoLegivel(arquivo.size), erro: null };
       if (ext === "doc" || ext === "docx") { item.estado = "err"; item.erro = "Word não é aceito aqui. Salve como PDF no Word e envie o PDF."; }
       else if (!["pdf", "jpg", "jpeg", "png"].includes(ext)) { item.estado = "err"; item.erro = "Formato não aceito. Envie PDF, JPG ou PNG."; }
       itens.push(item);
@@ -714,18 +608,15 @@
     while ((item = itens.find((i) => i.estado === "wait"))) {
       item.estado = "busy"; render();
       try {
-        const rotuloModo = item.modo === "protegido" ? "protegido" : "simples";
         if (item.ext === "pdf") {
           const bytes = new Uint8Array(await item.arquivo.arrayBuffer());
-          const r = item.modo === "protegido"
-            ? await marcarPdfProtegido(bytes, item.texto, (n, total) => { item.detalhe = `página ${n} de ${total}`; render(); })
-            : await marcarPdfSimples(bytes, item.texto);
+          const r = await marcarPdf(bytes, item.texto, (n, total) => { item.detalhe = `página ${n} de ${total}`; render(); });
           item.saida = r.blob;
-          item.detalhe = `${plural(r.paginas, "página", "páginas")} · ${rotuloModo} · ${tamanhoLegivel(r.blob.size)} · “${item.texto}”`;
+          item.detalhe = `${plural(r.paginas, "página", "páginas")} · ${tamanhoLegivel(r.blob.size)} · “${item.texto}”`;
         } else {
-          const r = await marcarImagem(item.arquivo, item.ext === "png" ? "image/png" : "image/jpeg", item.modo, item.texto);
+          const r = await marcarImagem(item.arquivo, item.ext === "png" ? "image/png" : "image/jpeg", item.texto);
           item.saida = r.blob;
-          item.detalhe = `${r.dimensoes} · ${rotuloModo} · ${tamanhoLegivel(r.blob.size)} · “${item.texto}”`;
+          item.detalhe = `${r.dimensoes} · ${tamanhoLegivel(r.blob.size)} · “${item.texto}”`;
         }
         item.estado = "ok";
       } catch (e) {
@@ -821,7 +712,6 @@
   window.addEventListener("drop", (e) => e.preventDefault());
   $("zip").addEventListener("click", baixarZip);
   $("clear").addEventListener("click", () => { itens.length = 0; render(); });
-  document.querySelectorAll('input[name="modo"]').forEach((r) => r.addEventListener("change", atualizarProva));
   $("textos").addEventListener("change", (e) => { if (e.target.name === "texto") atualizarTexto(); });
   // escrever no campo livre já escolhe a opção "outro texto"
   $("texto-livre").addEventListener("input", () => { $("texto-outro").checked = true; atualizarTexto(); });
@@ -830,10 +720,12 @@
   });
   $("salvar-texto").addEventListener("click", salvarTexto);
 
-  try { if (localStorage.getItem("marca-dagua-modo") === "simples") $("modo-simples").checked = true; } catch {}
-  if (!window.PDFLib || !window.JSZip || !window.pdfjsLib || !window.jspdf) {
+  // a escolha de modo deixou de existir; limpa o que versões antigas guardaram
+  try { localStorage.removeItem("marca-dagua-modo"); } catch {}
+  if (!window.JSZip || !window.pdfjsLib || !window.jspdf) {
     aviso("Não foi possível carregar os componentes da página. Verifique a conexão com a internet e recarregue.");
   }
+  $("sufixo").textContent = SUFIXO; // o aviso da lista vazia mostra sempre o final em uso
   renderTextos(TEXTO_PADRAO); // o texto padrão sempre vem pré-selecionado ao abrir a página
   atualizarTexto();
   render();

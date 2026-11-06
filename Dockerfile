@@ -1,4 +1,4 @@
-# Site estático da marca d'água: nginx servindo web/index.html na porta 80, protegido por login e senha
+# Site estático da Proteção de Documentos Strong Business School: nginx servindo web/index.html na porta 80, protegido por login e senha
 FROM nginx:1.27-alpine
 RUN apk add --no-cache openssl
 COPY nginx.conf /etc/nginx/conf.d/default.conf

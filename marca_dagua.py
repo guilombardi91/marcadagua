@@ -2,8 +2,8 @@
 Aplica marca d'água diagonal ("atravessada") em todas as páginas de documentos.
 
 Formatos suportados:
-  - PDF  (.pdf)                 -> gera <nome>_MARCA_DAGUA.pdf
-  - Imagens (.jpg .jpeg .png)   -> gera <nome>_MARCA_DAGUA.<ext>
+  - PDF  (.pdf)                 -> gera <nome>_PROTEGIDO.pdf
+  - Imagens (.jpg .jpeg .png)   -> gera <nome>_PROTEGIDO.<ext>
   - Word (.docx .doc)           -> convertido para PDF via Microsoft Word e marcado
 
 Uso:
@@ -27,7 +27,9 @@ TEXTO = "PARA USO EXCLUSIVO DA ARTTICAPITAL"
 COR = (0.6, 0.6, 0.6)   # cinza (RGB 0-1)
 OPACIDADE = 0.30        # 0 = invisível, 1 = sólido
 OCUPACAO = 0.85         # fração da diagonal da página ocupada pelo texto
-SUFIXO = "_MARCA_DAGUA"
+SUFIXO = "_PROTEGIDO"
+# finais usados por versões anteriores: arquivos com eles também já estão marcados
+SUFIXOS_ANTIGOS = ("_MARCA_DAGUA",)
 
 EXT_PDF = {".pdf"}
 EXT_IMG = {".jpg", ".jpeg", ".png"}
@@ -135,7 +137,7 @@ def word_para_pdf(origem, destino_pdf):
 def processar(caminho):
     raiz, ext = os.path.splitext(caminho)
     ext = ext.lower()
-    if raiz.endswith(SUFIXO):
+    if raiz.endswith((SUFIXO,) + SUFIXOS_ANTIGOS):
         return None  # já marcado
     if ext in EXT_PDF:
         destino = raiz + SUFIXO + ".pdf"
